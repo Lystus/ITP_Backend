@@ -134,5 +134,33 @@ namespace MovieRecommendationBackend.Controllers
         {
             return _context.Movies.Any(e => e.MovieId == id);
         }
+
+        public async string GetMovieImage(string MName)
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri("https://google-search3.p.rapidapi.com/api/v1/images/q="+MName+"&num=1"),
+                Headers =
+    {
+        { "x-rapidapi-key", "cd3c41e77amshd84e637ee978158p1ae55ejsn4ebb80283a0a" },
+        { "x-rapidapi-host", "google-search3.p.rapidapi.com" },
+    },
+            };
+            using (var response = await client.SendAsync(request))
+            {
+                response.EnsureSuccessStatusCode();
+                var body = await response.Content.ReadAsStringAsync();
+                JObject json = JObject.Parse(body);
+                string hv = json.SelectToken("image_results").ToString().Replace("[", "");
+                hv = hv.Replace("]", "");
+                string[] strarr = hv.Split("}\r\n  },\r\n");
+                JObject json2 = JObject.Parse(strarr[1]);
+                JObject json3 = JObject.Parse(json2.SelectToken("image").ToString());
+                string src = json3.SelectToken("src").ToString();
+                return src;
+            }
+        }
     }
 }
