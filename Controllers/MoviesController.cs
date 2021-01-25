@@ -134,7 +134,7 @@ namespace MovieRecommendationBackend.Controllers
         {
             return _context.Movies.Any(e => e.MovieId == id);
         }
-
+        //GoogleSearchAPI
         public async string GetMovieImage(string MName)
         {
             var client = new HttpClient();
